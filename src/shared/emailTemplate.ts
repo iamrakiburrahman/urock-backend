@@ -1,0 +1,369 @@
+import {
+     IBlockAccount,
+     ICampaignPaymentFailed,
+     ICampaignPaymentSuccess,
+     ICheckoutExpired,
+     IContact,
+     ICreateAccount,
+     IHelpContact,
+     IHelpReplay,
+     IResetPassword,
+     IResetPasswordByEmail,
+} from '../types/emailTemplate';
+
+const createAccount = (values: ICreateAccount) => {
+     const data = {
+          to: values.email,
+          subject: 'Verify your account',
+          html: `<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 50px; padding: 20px; color: #555;">
+    <div style="width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center;">
+        <img src="https://i.postimg.cc/6pgNvKhD/logo.png" alt="Logo" style="display: block; margin: 0 auto 20px; width:150px" />
+          <h2 style="color: #277E16; font-size: 24px; margin-bottom: 20px;">Hey! ${values.name}, Your Account Credentials</h2>
+        <div style="text-align: center;">
+            <p style="color: #555; font-size: 16px; line-height: 1.5; margin-bottom: 20px;">Your single use code is:</p>
+            <div style="background-color: #277E16; width: 120px; padding: 10px; text-align: center; border-radius: 8px; color: #fff; font-size: 25px; letter-spacing: 2px; margin: 20px auto;">${values.otp}</div>
+            <p style="color: #555; font-size: 16px; line-height: 1.5; margin-bottom: 20px;">This code is valid for 3 minutes.</p>
+        </div>
+    </div>
+</body>`,
+     };
+     return data;
+};
+const contact = (values: IContact) => {
+     const data = {
+          to: values.email,
+          subject: 'We’ve Received Your Message – Thank You!',
+          html: `<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 50px; padding: 20px; color: #555;">      
+      <div style="width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+          <img src="https://res.cloudinary.com/ddhhyc6mr/image/upload/v1742293522/buzzy-box-logo.png" alt="Logo" style="display: block; margin: 0 auto 20px; width:150px" />
+          <h2 style="color: #277E16; font-size: 24px; margin-bottom: 20px; text-align: center;">Thank You for Contacting Us, ${values.name}!</h2>
+          
+          <p style="color: #555; font-size: 16px; line-height: 1.5; text-align: center;">
+              We have received your message and our team will get back to you as soon as possible.
+          </p>
+          
+          <div style="padding: 15px; background-color: #f4f4f4; border-radius: 8px; margin: 20px 0;">
+              <p style="color: #333; font-size: 16px; font-weight: bold;">Your Message Details:</p>
+              <p><strong>Name:</strong> ${values.name}</p>
+              <p><strong>Email:</strong> ${values.email}</p>
+              <p><strong>Subject:</strong> ${values.subject}</p>
+              <br/>
+              <p><strong>Message:</strong> ${values.message}</p>
+          </div>
+
+          <p style="color: #555; font-size: 14px; text-align: center;">
+              If your inquiry is urgent, feel free to reach out to us directly at 
+              <a href="mailto:support@yourdomain.com" style="color: #277E16; text-decoration: none;">support@yourdomain.com</a>.
+          </p>
+
+          <p style="color: #555; font-size: 14px; text-align: center; margin-top: 20px;">
+              Best Regards, <br/>
+              The [Your Company Name] Team
+          </p>
+      </div>
+  </body>`,
+     };
+     return data;
+};
+const resetPassword = (values: IResetPassword) => {
+     const data = {
+          to: values.email,
+          subject: 'Reset your password',
+          html: `<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 50px; padding: 20px; color: #555;">
+    <div style="width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <img src="https://i.postimg.cc/6pgNvKhD/logo.png" alt="Logo" style="display: block; margin: 0 auto 20px; width:150px" />
+        <div style="text-align: center;">
+            <p style="color: #555; font-size: 16px; line-height: 1.5; margin-bottom: 20px;">Your single use code is:</p>
+            <div style="background-color: #277E16; width: 120px; padding: 10px; text-align: center; border-radius: 8px; color: #fff; font-size: 25px; letter-spacing: 2px; margin: 20px auto;">${values.otp}</div>
+            <p style="color: #555; font-size: 16px; line-height: 1.5; margin-bottom: 20px;">This code is valid for 3 minutes.</p>
+                <p style="color: #b9b4b4; font-size: 16px; line-height: 1.5; margin-bottom: 20px;text-align:left">If you didn't request this code, you can safely ignore this email. Someone else might have typed your email address by mistake.</p>
+        </div>
+    </div>
+</body>`,
+     };
+     return data;
+};
+const resetPasswordByUrl = (values: IResetPasswordByEmail) => {
+     const data = {
+          to: values.email,
+          subject: 'Reset Your Password',
+          html: `<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 50px; padding: 20px; color: #555;">
+      <div style="width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <img src="https://i.postimg.cc/6pgNvKhD/logo.png" alt="Logo" style="display: block; margin: 0 auto 20px; width:150px" />
+        <div style="text-align: center;">
+          <h2 style="color: #333;">Reset Your Password</h2>
+          <p style="color: #555; font-size: 16px; line-height: 1.5;">We received a request to reset your password. Click the button below to reset it:</p>
+          <a href="${values.resetUrl}" target="_blank" style="display: inline-block; background-color: #277E16; color: white; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-size: 18px; margin: 20px auto;">Reset Password</a>
+          <p style="color: #555; font-size: 16px; line-height: 1.5; margin-top: 20px;">If you didn’t request this, you can ignore this email.</p>
+          <p style="color: #b9b4b4; font-size: 14px;">This link will expire in 10 minutes.</p>
+        </div>
+      </div>
+    </body>`,
+     };
+     return data;
+};
+
+const contactFormTemplate = (values: IHelpContact) => {
+     const data = {
+          to: values.email,
+          subject: 'Thank you for reaching out to us',
+          html: `<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 50px; padding: 20px; color: #555;">
+    <div style="width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <img src="https://i.postimg.cc/6pgNvKhD/logo.png" alt="Logo" style="display: block; margin: 0 auto 20px; width:150px" />
+        <div style="text-align: center;">
+            <p style="color: #555; font-size: 16px; line-height: 1.5; margin-bottom: 20px;">Hello ${values.name},</p>
+            <p style="color: #555; font-size: 16px; line-height: 1.5; margin-bottom: 20px;">Thank you for reaching out to us. We have received your message:</p>
+            <div style="background-color: #f1f1f1; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px;">
+                <p style="color: #555; font-size: 16px; line-height: 1.5;">"${values.message}"</p>
+            </div>
+            <p style="color: #555; font-size: 16px; line-height: 1.5; margin-bottom: 20px;">We will get back to you as soon as possible. Below are the details you provided:</p>
+            <p style="color: #555; font-size: 16px; line-height: 1.5; margin-bottom: 10px;">Email: ${values.email}</p>
+            <p style="color: #555; font-size: 16px; line-height: 1.5; margin-bottom: 10px;">Phone: ${values.phone}</p>
+            <p style="color: #b9b4b4; font-size: 16px; line-height: 1.5; margin-bottom: 20px;">If you need immediate assistance, please feel free to contact us directly at our support number.</p>
+        </div>
+    </div>
+</body>`,
+     };
+     return data;
+};
+const helpReplyTemplate = (values: IHelpReplay, adminMessage: string) => {
+     const data = {
+          to: values.email,
+          subject: 'Response to Your Help Request',
+          html: `<body style="font-family: 'Roboto', sans-serif; background-color: #f3f3f3; margin: 0; padding: 0; color: #333;">
+  <div style="max-width: 650px; margin: 40px auto; background-color: #fff; border-radius: 8px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); padding: 25px; color: #333;">
+    <img src="https://res.cloudinary.com/dreiyzj42/image/upload/v1762927212/sundarbanila_hp4s7g.png" alt="Logo" style="display: block; margin: 0 auto 20px; width: 150px;" />
+    
+    <div style="text-align: left; padding: 0 20px;">
+      <p style="font-size: 18px; color: #555; line-height: 1.6; margin-bottom: 15px;">Hello ${values.name},</p>
+      <p style="font-size: 16px; color: #555; line-height: 1.7; margin-bottom: 20px;">Thank you for reaching out! We’ve received your message and our team is working on it. Below are the details:</p>
+
+      <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2196F3;">
+        <p style="font-size: 16px; color: #333; font-weight: bold; margin-bottom: 10px;">Your Message:</p>
+        <p style="font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 20px;">"${values.message}"</p>
+      </div>
+
+      <div style="background-color: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #388e3c;">
+        <p style="font-size: 16px; color: #333; font-weight: bold; margin-bottom: 10px;">Our Response:</p>
+        <p style="font-size: 16px; color: #388e3c; line-height: 1.6;">"${adminMessage}"</p>
+      </div>
+
+      <p style="font-size: 16px; color: #555; line-height: 1.7; margin-bottom: 20px;">If you have further questions or need additional assistance, feel free to reach out. We're here to help.</p>
+      
+      <div style="border-top: 1px solid #f1f1f1; padding-top: 20px; text-align: center;">
+        <p style="font-size: 14px; color: #888;">Best regards,</p>
+        <p style="font-size: 16px; font-weight: bold; color: #333;">Support Team</p>
+        <p style="font-size: 14px; color: #888;">Company Name | <a href="https://www.companywebsite.com" style="color: #2196F3; text-decoration: none;">www.companywebsite.com</a></p>
+      </div>
+    </div>
+  </div>
+</body>`,
+     };
+     return data;
+};
+const blockAccountTemplate = (values: IBlockAccount) => {
+     const data = {
+          to: values.email,
+          subject: 'Account Blocked Notification',
+          html: `<body style="font-family: 'Roboto', sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; color: #333;">
+  <div style="max-width: 650px; margin: 40px auto; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); padding: 30px; color: #333;">
+    <img src="https://res.cloudinary.com/dreiyzj42/image/upload/v1762927212/sundarbanila_hp4s7g.png" alt="Logo" style="display: block; margin: 0 auto 25px; width: 160px;" />
+    
+    <div style="text-align: left; padding: 0 20px;">
+      <p style="font-size: 20px; color: #444; line-height: 1.6; margin-bottom: 15px;">Hello ${values.name},</p>
+      <p style="font-size: 16px; color: #555; line-height: 1.8; margin-bottom: 25px;">We regret to inform you that your account has been blocked due to a violation of our Terms of Service. Please find the details below:</p>
+      
+      <p style="font-size: 16px; color: #555; line-height: 1.7; margin-bottom: 25px;">If you believe this action was taken in error or wish to appeal the decision, please feel free to reach out to us. We're happy to assist you further.</p>
+      
+      <div style="border-top: 2px solid #f1f1f1; padding-top: 30px; text-align: center;">
+        <p style="font-size: 14px; color: #888; margin: 0;">Best regards,</p>
+        <p style="font-size: 16px; font-weight: bold; color: #333;">Support Team</p>
+        <p style="font-size: 14px; color: #888; margin-top: 5px;">Company Name | <a href="https://www.companywebsite.com" style="color: #2196F3; text-decoration: none;">www.companywebsite.com</a></p>
+      </div>
+    </div>
+  </div>
+</body>`,
+     };
+     return data;
+};
+const verifyOtpTemplate = (values: { otp: number; email: string; name: string }) => {
+     const data = {
+          to: values.email,
+          subject: 'Verify Your Account',
+          html: `<body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f8f8f8; margin: 0; padding: 0; color: #333;">
+    <div style="width: 100%; max-width: 650px; margin: 0 auto; padding: 50px 30px; background-color: #fff; border-radius: 15px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);">
+        <img src="https://res.cloudinary.com/dreiyzj42/image/upload/v1757241986/Kindred_cltfag.png" alt="Logo" style="display: block; margin: 0 auto 30px; width: 140px;" />
+        <h2 style="color: #09B782; font-size: 32px; margin-bottom: 20px; text-align: center; font-weight: 700;">Verify Your Account</h2>
+        
+        <p style="color: #555; font-size: 16px; line-height: 1.5; text-align: center; margin-bottom: 30px;">
+            Hi ${values.name},<br />
+            To complete your account verification, use the OTP below.
+        </p>
+
+        <div style="background-color: #FFC603; padding: 20px; text-align: center; border-radius: 10px; color: #fff; font-size: 36px; font-weight: 700; letter-spacing: 4px; margin-bottom: 30px;">
+            ${values.otp}
+        </div>
+
+        <p style="color: #555; font-size: 14px; line-height: 1.5; text-align: center; margin-bottom: 40px;">
+            The code is valid for 3 minutes. Please enter it as soon as possible.
+        </p>
+
+        <div style="margin-top: 30px; padding-top: 10px; border-top: 1px solid #f0f0f0; font-size: 12px; color: #aaa; text-align: center;">
+            <p>&copy; ${new Date().getFullYear()} Emma. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+`,
+     };
+     return data;
+};
+const campaignPaymentSuccessTemplate = (values: ICampaignPaymentSuccess) => {
+     const data = {
+          to: values.email,
+          subject: 'Payment Successful. Campaign Activated',
+          html: `<body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f8f8f8; margin: 0; padding: 0; color: #333;">
+      <div style="width: 100%; max-width: 650px; margin: 0 auto; padding: 50px 30px; background-color: #ffffff; border-radius: 15px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);">
+          <img src="https://res.cloudinary.com/dreiyzj42/image/upload/v1757241986/Kindred_cltfag.png"
+              alt="Logo"
+              style="display: block; margin: 0 auto 30px; width: 140px;" />
+
+          <h2 style="color: #09B782; font-size: 30px; margin-bottom: 20px; text-align: center; font-weight: 700;">
+              Payment Confirmed
+          </h2>
+
+          <p style="color: #555; font-size: 16px; line-height: 1.6; text-align: center; margin-bottom: 30px;">
+              Hi ${values.name},<br />
+              We have successfully received your payment. Your campaign is now active.
+          </p>
+
+          <div style="background-color: #f6f6f6; padding: 25px; border-radius: 10px; margin-bottom: 30px;">
+              <p style="margin: 0 0 10px; font-size: 14px; color: #555;">
+                  Campaign name. <strong>${values.campaignName}</strong>
+              </p>
+              <p style="margin: 0 0 10px; font-size: 14px; color: #555;">
+                  Amount paid. <strong>${values.amount}</strong>
+              </p>
+              <p style="margin: 0 0 10px; font-size: 14px; color: #555;">
+                  Transaction ID. <strong>${values.transactionId}</strong>
+              </p>
+              <p style="margin: 0; font-size: 14px; color: #555;">
+                  Payment date. <strong>${values.paymentDate}</strong>
+              </p>
+          </div>
+
+          <p style="color: #555; font-size: 15px; line-height: 1.6; text-align: center; margin-bottom: 30px;">
+              Our team has started working on your campaign based on the approved scope and timeline.
+          </p>
+
+          <p style="color: #555; font-size: 14px; line-height: 1.6; text-align: center;">
+              If you have files, links, or additional instructions, please share them now.
+          </p>
+
+          <div style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #f0f0f0; font-size: 12px; color: #aaa; text-align: center;">
+              <p>&copy; ${new Date().getFullYear()} Emma. All rights reserved.</p>
+          </div>
+      </div>
+  </body>`,
+     };
+     return data;
+};
+
+const checkoutExpiredTemplate = (values: ICheckoutExpired) => {
+     const data = {
+          to: values.email,
+          subject: 'Checkout Expired',
+          html: `<body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f8f8f8; margin: 0; padding: 0; color: #333;">
+      <div style="width: 100%; max-width: 650px; margin: 0 auto; padding: 50px 30px; background-color: #ffffff; border-radius: 15px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);">
+
+        <img src="https://res.cloudinary.com/dreiyzj42/image/upload/v1757241986/Kindred_cltfag.png"
+            alt="Logo"
+            style="display: block; margin: 0 auto 30px; width: 140px;" />
+
+        <h2 style="color: #E74C3C; font-size: 28px; margin-bottom: 20px; text-align: center; font-weight: 700;">
+          Checkout Expired
+        </h2>
+
+        <p style="color: #555; font-size: 16px; line-height: 1.6; text-align: center; margin-bottom: 30px;">
+          Hi ${values.name},<br />
+          Your checkout session for the campaign <strong>${values.campaignName}</strong> expired on <strong>${values.expiredDate}</strong>.
+        </p>
+
+        <p style="color: #555; font-size: 15px; line-height: 1.6; text-align: center; margin-bottom: 20px;">
+          No payment was processed. If you still want to activate your campaign, please restart the checkout process.
+        </p>
+
+
+        <p style="color: #999; font-size: 13px; text-align: center;">
+          If you believe this is an error or need assistance, reply to this email.
+        </p>
+
+        <div style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #f0f0f0; font-size: 12px; color: #aaa; text-align: center;">
+          <p>&copy; ${new Date().getFullYear()} Emma. All rights reserved.</p>
+        </div>
+
+      </div>
+  </body>`,
+     };
+
+     return data;
+};
+const campaignPaymentFailedTemplate = (values: ICampaignPaymentFailed) => {
+     const data = {
+          to: values.email,
+          subject: 'Payment Failed',
+          html: `<body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f8f8f8; margin: 0; padding: 0; color: #333;">
+      <div style="width: 100%; max-width: 650px; margin: 0 auto; padding: 50px 30px; background-color: #ffffff; border-radius: 15px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);">
+
+        <img src="https://res.cloudinary.com/dreiyzj42/image/upload/v1757241986/Kindred_cltfag.png"
+            alt="Logo"
+            style="display: block; margin: 0 auto 30px; width: 140px;" />
+
+        <h2 style="color: #E74C3C; font-size: 28px; margin-bottom: 20px; text-align: center; font-weight: 700;">
+          Payment Failed
+        </h2>
+
+        <p style="color: #555; font-size: 16px; line-height: 1.6; text-align: center; margin-bottom: 30px;">
+          Hi ${values.name},<br />
+          Your payment for the campaign <strong>${values.campaignName}</strong> failed on <strong>${values.failedDate}</strong>.
+        </p>
+
+        ${
+             values.reason
+                  ? `<p style="color: #555; font-size: 14px; text-align: center; margin-bottom: 20px;">
+          Reason. <strong>${values.reason}</strong>
+        </p>`
+                  : ''
+        }
+
+        <p style="color: #555; font-size: 15px; line-height: 1.6; text-align: center; margin-bottom: 20px;">
+          Your campaign has not been activated. Please try the payment again to continue.
+        </p>
+
+        <p style="color: #999; font-size: 13px; text-align: center;">
+          If the issue persists or you need help, reply to this email.
+        </p>
+
+        <div style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #f0f0f0; font-size: 12px; color: #aaa; text-align: center;">
+          <p>&copy; ${new Date().getFullYear()} Emma. All rights reserved.</p>
+        </div>
+
+      </div>
+  </body>`,
+     };
+
+     return data;
+};
+
+export const emailTemplate = {
+     createAccount,
+     resetPassword,
+     resetPasswordByUrl,
+     contactFormTemplate,
+     contact,
+     helpReplyTemplate,
+     blockAccountTemplate,
+     verifyOtpTemplate,
+     campaignPaymentSuccessTemplate,
+     checkoutExpiredTemplate,
+     campaignPaymentFailedTemplate
+};
