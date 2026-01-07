@@ -33,11 +33,18 @@ const updateMovieByIdInDB = async (id: string, payload: Partial<TMovie>) => {
     return result;
 };
 
-
+const deleteMovieByIdFromDB = async (id: string) => {
+    const result = await Movie.findByIdAndDelete(id);
+    if (!result) {
+        throw new Error("Failed to delete movie");
+    }
+    return result;
+};
 
 export const MovieServices = {
     createMovieToDB,
     getAllMoviesFromDB,
     getMovieByIdFromDB,
     updateMovieByIdInDB,    
+    deleteMovieByIdFromDB,  
 }
