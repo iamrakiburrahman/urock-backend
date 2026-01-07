@@ -34,8 +34,21 @@ const getGenreById = catchAsync(async (req, res) => {
     });
 })
 
+const updateGenreById = catchAsync(async (req, res) => {
+    const id = req.params.id;
+    const genre = req.body;
+    const result = await GenreServices.updateGenreByIdInDB(id, genre);
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Genre updated successfully',
+        data: result,
+    });
+})
+
 export const GenreControllers = {
     createGenre,
     getAllGenres,
     getGenreById,
+    updateGenreById,
 }
