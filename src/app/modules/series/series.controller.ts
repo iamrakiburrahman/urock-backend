@@ -5,14 +5,25 @@ import { SeriesServices } from "./series.service";
 const createSeries = catchAsync(async (req, res) => {
     const data = req.body;
     const result = await SeriesServices.createSeriesToDB(data);
-    sendResponse(res,{
-        success:true,
-        statusCode:200,
-        message:'Series created successfully',
-        data:result
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Series created successfully',
+        data: result
     })
 })
 
-export const SeriesControllers={
+const getAllSeries = catchAsync(async (req, res) => {
+    const result = await SeriesServices.getAllSeriesFromDB();
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Series retrieved successfully',
+        data: result
+    })
+})
+
+export const SeriesControllers = {
     createSeries,
+    getAllSeries,
 }
