@@ -18,7 +18,16 @@ const getAllSeriesFromDB = async () => {
     return series;
 };
 
+const getSeriesByIdFromDB = async (id: string) => {
+    const series = await Series.findById(id);
+    if (!series) {
+        throw new Error('Failed to get series');
+    }
+    return series;
+};
+
 export const SeriesServices = {
     createSeriesToDB,
     getAllSeriesFromDB,
+    getSeriesByIdFromDB,    
 }
