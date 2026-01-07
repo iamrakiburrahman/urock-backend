@@ -27,12 +27,12 @@ const getSeriesByIdFromDB = async (id: string) => {
 };
 
 const updateSeriesInDB = async (
-    id: string, 
-    payload: any 
+    id: string,
+    payload: any
 ) => {
     const { action, seasonIndex, episodeIndex, data, ...remainingData } = payload;
 
- 
+
     const modifiedUpdatedData: Record<string, unknown> = {
         ...remainingData,
     };
@@ -44,15 +44,15 @@ const updateSeriesInDB = async (
                 modifiedUpdatedData[`seasons.${sIdx}.${key}`] = season[key];
             });
         });
-        delete modifiedUpdatedData.seasons; 
+        delete modifiedUpdatedData.seasons;
     }
 
-  
+
     let updateQuery: any = { $set: modifiedUpdatedData };
 
     if (action === 'add-season') {
         updateQuery.$push = { seasons: data };
-    } 
+    }
     else if (action === 'add-episode' && seasonIndex !== undefined) {
         updateQuery.$push = { [`seasons.${seasonIndex}.episodes`]: data };
     }
@@ -68,12 +68,12 @@ const updateSeriesInDB = async (
             doc.seasons[seasonIndex].episodes.splice(episodeIndex, 1);
         }
 
-      
-        Object.assign(doc, remainingData); 
+
+        Object.assign(doc, remainingData);
         return await doc.save();
     }
 
-  
+
     const result = await Series.findByIdAndUpdate(
         id,
         updateQuery,
@@ -86,9 +86,18 @@ const updateSeriesInDB = async (
     return result;
 };
 
+const deleteSeriesFromDB = async (id: string) => {
+    const result = await Series.findByIdAndDelete(id);
+    if (!result) {
+        throw new Error('Failed to delete series');
+    }
+    return result;
+};
+
 export const SeriesServices = {
     createSeriesToDB,
     getAllSeriesFromDB,
-    getSeriesByIdFromDB,    
+    getSeriesByIdFromDB,
     updateSeriesInDB,
+    deleteSeriesFromDB, 
 }
