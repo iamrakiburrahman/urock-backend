@@ -23,7 +23,18 @@ const getAllSeries = catchAsync(async (req, res) => {
     })
 })
 
+const getSeriesById = catchAsync(async (req, res) => {
+    const result = await SeriesServices.getSeriesByIdFromDB(req.params.id);
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Series retrieved successfully',
+        data: result
+    })
+})
+
 export const SeriesControllers = {
     createSeries,
     getAllSeries,
+    getSeriesById,
 }
