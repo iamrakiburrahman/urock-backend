@@ -5,7 +5,6 @@ import { USER_ROLES } from '../enums/user';
 import { logger } from '../shared/logger';
 import colors from 'colors';
 import bcrypt from 'bcrypt';
-import { PlatformFee } from '../app/modules/platformFee/platformFee.model';
 
 const usersData = [
      {
@@ -18,7 +17,7 @@ const usersData = [
      {
           name: 'User',
           email: 'user@gmail.com',
-          role: USER_ROLES.CREATOR,
+          role: USER_ROLES.USER,
           password: 'hello123',
           isVerified: true,
      },
@@ -50,30 +49,17 @@ const seedUsers = async () => {
      }
 };
 
-const seedPlatformFee = async () => {
-     try {
-          await PlatformFee.deleteMany();
-          await PlatformFee.insertMany([
-               {
-                    platformFee: 8,
-               },
-          ]);
-          logger.info(colors.green('✨ --------------> Platform Fee seeded successfully <-------------- ✨'));
-     } catch (err) {
-          logger.error(colors.red('💥 Error seeding platform fee: 💥'), err);
-     }
-};
+
 
 // Connect to MongoDB
 mongoose.connect(config.database_url as string);
 
-const seedSuperAdmin = async () => {
+export const seedSuperAdmin = async () => {
      try {
           logger.info(colors.cyan('🎨 --------------> Database seeding start <--------------- 🎨'));
 
           // Start seeding users
           await seedUsers();
-          await seedPlatformFee();
           logger.info(colors.green('🎉 --------------> Database seeding completed <--------------- 🎉'));
      } catch (error) {
           logger.error(colors.red('🔥 Error creating Super Admin: 🔥'), error);

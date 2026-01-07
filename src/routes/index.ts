@@ -14,6 +14,7 @@ import { ReportRoutes } from '../app/modules/report/report.routes';
 import { FaqRoutes } from '../app/modules/faq/faq.route';
 import { ReviewRoutes } from '../app/modules/review/review.routes';
 import { UserManagementsRouter } from '../app/modules/userManagements/userManagements.router';
+import { GenreRoutes } from '../app/modules/genre/genre.route';
 
 const router = express.Router();
 const routes = [
@@ -77,6 +78,10 @@ const routes = [
      {
           path: '/user-managements',
           route: UserManagementsRouter,
+     },
+     {
+          path: '/genres',
+          route: GenreRoutes,
      }
 ];
 

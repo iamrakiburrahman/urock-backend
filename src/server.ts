@@ -12,6 +12,7 @@ import { setupSecurity } from './DB/security';
 import { connectToRedis } from './DB/redis';
 import { setupQueueEvents, setupWorkerEvents } from './DB/bullMQ';
 import { startRealtimeMonitoring } from './scripts/startRealtimeMonitoring';
+import { seedSuperAdmin } from './seed/seedAdmin';
 
 export let httpServer: HttpServer;
 export let socketServer: SocketServer;
@@ -32,12 +33,15 @@ process.on('uncaughtException', (error: Error) => {
 async function startServer(): Promise<void> {
      try {
           logger.info(colors.cyan('🚀 Starting HTTP server...'));
-          
+
           // Validate config first
           validateConfig();
 
           // Connect to database 
           await connectToDatabase();
+
+
+          // await seedSuperAdmin();
 
           // Create HTTP server
           httpServer = createServer(app);
@@ -55,7 +59,7 @@ async function startServer(): Promise<void> {
                     logger.info(colors.bgCyan.bold.white(`♻️  Server (PID: ${process.pid}) listening on http://${ipAddress}:${httpPort}`));
                     resolve();
                });
-               
+
                httpServer.on('error', (err: any) => {
                     if (err.code === 'EADDRINUSE') {
                          logger.error(colors.red(`❌ Port ${httpPort} is already in use`));
@@ -107,14 +111,14 @@ async function main() {
           // Setup security headers
           logger.info(colors.cyan('🔒 Setting up security...'));
           setupSecurity();
-          
+
           // Setup graceful shutdown handlers
           logger.info(colors.cyan('🛡️  Setting up process handlers...'));
           setupProcessHandlers();
-          
+
           // Start the server
           await startServer();
-          
+
           // Connect to Redis (with retry logic)
           logger.info(colors.cyan('🔴 Connecting to Redis...'));
           try {
@@ -124,7 +128,7 @@ async function main() {
                logger.error(colors.yellow('⚠️  Redis connection failed (non-fatal):'), redisError?.message);
                logger.warn(colors.yellow('Server will continue without Redis. Some features may be limited.'));
           }
-          
+
           // Setup BullMQ events (only if Redis is available)
           try {
                logger.info(colors.cyan('📋 Setting up BullMQ events...'));
@@ -135,7 +139,7 @@ async function main() {
                logger.error(colors.yellow('⚠️  BullMQ setup failed (non-fatal):'), bullmqError?.message);
                logger.warn(colors.yellow('Background jobs may not work. Check Redis connection.'));
           }
-          
+
           // Start monitoring (only in production)
           if (config.node_env === 'production') {
                try {
@@ -146,7 +150,7 @@ async function main() {
                     logger.error(colors.yellow('⚠️  Monitoring setup failed (non-fatal):'), monitorError?.message);
                }
           }
-          
+
           logger.info(colors.green.bold('='.repeat(50)));
           logger.info(colors.green.bold(`✅ Server bootstrap completed successfully (PID: ${process.pid})`));
           logger.info(colors.green.bold(`🌐 Server ready to accept connections`));
@@ -166,10 +170,10 @@ async function main() {
                logger.error(colors.red('Stack trace:'), error.stack);
           }
           logger.error(colors.red.bold('='.repeat(50)));
-          
+
           // Give time for logs to flush
           await new Promise(resolve => setTimeout(resolve, 1000));
-          
+
           process.exit(1);
      }
 }
