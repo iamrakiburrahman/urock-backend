@@ -86,6 +86,9 @@ const FIELD_CONFIGS: FieldConfig[] = [
      { fieldName: 'permits', folderName: 'permits', fileType: 'image', maxCount: 1 },
      { fieldName: 'insurance', folderName: 'insurance', fileType: 'image', maxCount: 1 },
      { fieldName: 'driverLicense', folderName: 'driverLicense', fileType: 'image', maxCount: 1 },
+     { fieldName: 'seriesThumbnail', folderName: 'seriesThumbnail', fileType: 'image', maxCount: 5 },
+     { fieldName: 'seasonThumbnail', folderName: 'seasonThumbnail', fileType: 'image', maxCount: 5 },
+     { fieldName: 'episodeThumbnail', folderName: 'episodeThumbnail', fileType: 'image', maxCount: 5 },
 
      // Media fields
      { fieldName: 'audio', folderName: 'audio', fileType: 'audio', maxCount: 5 },

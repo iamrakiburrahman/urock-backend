@@ -7,8 +7,8 @@ const episodeSchema = new mongoose.Schema<TEpisode>({
     title: { type: String, required: true },
     description: { type: String, required: true },
     runTime: { type: String, required: true },
-    videoUrl: { type: String, required: true },
-    thumbnail: { type: String, required: true },
+    video: { type: String, required: true },
+    episodeThumbnail: { type: String, required: true },
     releaseDate: { type: String, required: true },
 });
 
@@ -16,7 +16,7 @@ const seasonSchema = new mongoose.Schema<TSeason>({
     seasonNumber: { type: Number, required: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
-    thumbnail: { type: String, required: true },
+    seasonThumbnail: { type: String, required: true },
     episodes: { type: [episodeSchema], required: true },
 });
 
@@ -26,7 +26,7 @@ const seriesSchema = new mongoose.Schema<TSeries>({
     genreId: { type: mongoose.Schema.Types.ObjectId, ref: 'Genre', required: true },
     releaseYear: { type: String, required: true },
     ageRating: { type: String, required: true },
-    thumbnail: { type: String, required: true },
+    seriesThumbnail: { type: String, required: true },
     trailer: { type: String, required: true },
     cast: { type: String, required: true },
     director: { type: String, required: true },

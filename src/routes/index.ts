@@ -16,6 +16,7 @@ import { ReviewRoutes } from '../app/modules/review/review.routes';
 import { UserManagementsRouter } from '../app/modules/userManagements/userManagements.router';
 import { GenreRoutes } from '../app/modules/genre/genre.route';
 import { MovieRoutes } from '../app/modules/movie/movie.route';
+import { SeriesRoutes } from '../app/modules/series/series.route';
 
 const router = express.Router();
 const routes = [
@@ -87,7 +88,11 @@ const routes = [
      {
           path: '/movies',
           route: MovieRoutes,
-     }
+     },
+     {
+          path: '/series',
+          route: SeriesRoutes,
+     },
 ];
 
 routes.forEach((element) => {

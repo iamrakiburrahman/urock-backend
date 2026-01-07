@@ -11,8 +11,8 @@ export type TEpisode = {
     title: string;
     description: string;
     runTime: string;
-    videoUrl: string; 
-    thumbnail: string;
+    video: string; 
+    episodeThumbnail: string;
     releaseDate: string;
 }
 
@@ -21,7 +21,7 @@ export type TSeason = {
     seasonNumber: number;
     title: string;
     description: string;
-    thumbnail: string;
+    seasonThumbnail: string;
     episodes: TEpisode[]; 
 }
 
@@ -32,7 +32,7 @@ export type TSeries = {
     genreId: Schema.Types.ObjectId;
     releaseYear: string;
     ageRating: string;
-    thumbnail: string;
+   seriesThumbnail: string;
     trailer: string;
     cast: string;
     director: string;
