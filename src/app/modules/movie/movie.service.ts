@@ -17,7 +17,16 @@ const getAllMoviesFromDB = async () => {
     return result;
 };
 
+const getMovieByIdFromDB = async (id: string) => {
+    const result = await Movie.findById(id);
+    if (!result) {
+        throw new Error("Failed to get movie");
+    }
+    return result;
+};
+
 export const MovieServices = {
     createMovieToDB,
     getAllMoviesFromDB,
+    getMovieByIdFromDB,
 }
