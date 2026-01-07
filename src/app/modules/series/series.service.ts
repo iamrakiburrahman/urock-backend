@@ -10,8 +10,15 @@ const createSeriesToDB = async (seriesData: TSeries) => {
     return series;
 };
 
-
+const getAllSeriesFromDB = async () => {
+    const series = await Series.find();
+    if (!series || series.length === 0) {
+        throw new Error('Failed to get series');
+    }
+    return series;
+};
 
 export const SeriesServices = {
     createSeriesToDB,
+    getAllSeriesFromDB,
 }
