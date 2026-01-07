@@ -9,6 +9,15 @@ const createMovieToDB = async (payload: TMovie) => {
     return result;
 };
 
+const getAllMoviesFromDB = async () => {
+    const result = await Movie.find();
+    if (!result || result.length === 0) {   
+        throw new Error("Failed to get movies");
+    }
+    return result;
+};
+
 export const MovieServices = {
     createMovieToDB,
+    getAllMoviesFromDB,
 }
