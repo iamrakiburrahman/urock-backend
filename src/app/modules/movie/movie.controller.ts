@@ -14,7 +14,8 @@ const createMovie = catchAsync(async (req, res) => {
 });
 
 const getAllMovies = catchAsync(async (req, res) => {
-    const result = await MovieServices.getAllMoviesFromDB();
+    const { id: userId } = req.user as any;
+    const result = await MovieServices.getAllMoviesFromDB(userId);
     sendResponse(res, {
         statusCode: 200,
         success: true,
@@ -46,6 +47,19 @@ const updateMovieById = catchAsync(async (req, res) => {
     });
 });
 
+const updateMovieStatus = catchAsync(async (req, res) => {
+    const id = req.params.id;
+    const status = req.body.status;
+    console.log(status,"status")
+    const result = await MovieServices.updateMovieStatusInDB(id, status);
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Movie status updated are successfully',
+        data: result,
+    });
+})
+
 const deleteMovieById = catchAsync(async (req, res) => {
     const id = req.params.id;
     const result = await MovieServices.deleteMovieByIdFromDB(id);
@@ -59,8 +73,9 @@ const deleteMovieById = catchAsync(async (req, res) => {
 
 export const MovieControllers = {
     createMovie,
-    getAllMovies,   
-    getMovieById,   
-    updateMovieById,    
-    deleteMovieById,    
+    getAllMovies,
+    getMovieById,
+    updateMovieById,
+    updateMovieStatus,
+    deleteMovieById,
 }

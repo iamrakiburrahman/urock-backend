@@ -6,6 +6,7 @@ import fileUploadHandler from "../../middleware/fileUploadHandler";
 import parseFileData from "../../middleware/parseFileData";
 import { FOLDER_NAMES } from "../../../enums/files";
 import parseJsonMiddleware from "../../middleware/dataParseHandler";
+import optionalAuth from "../../middleware/optionalAuth";
 
 const router = express.Router();
 
@@ -18,8 +19,15 @@ router.post('/',
         { fieldName: FOLDER_NAMES.MOVIE, forceSingle: true },
     ),
     MovieControllers.createMovie);
-router.get('/', MovieControllers.getAllMovies);
+
+router.get('/', optionalAuth(), MovieControllers.getAllMovies);
+
 router.get('/:id', MovieControllers.getMovieById);
+
+router.patch('/:id/status',
+    auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+    MovieControllers.updateMovieStatus);
+
 router.patch('/:id',
     auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
     fileUploadHandler(),
@@ -29,6 +37,7 @@ router.patch('/:id',
         { fieldName: FOLDER_NAMES.MOVIE, forceSingle: true },
     ),
     MovieControllers.updateMovieById);
+    
 router.delete('/:id', auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), MovieControllers.deleteMovieById);
 
 export const MovieRoutes = router;

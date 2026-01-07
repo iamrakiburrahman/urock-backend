@@ -1,8 +1,8 @@
 import { Schema } from "mongoose";
 
 export enum MOVIE_STATUS {
-    "ACTIVE" = "ACTIVE",
-    "INACTIVE" = "INACTIVE",
+    "ACTIVE" = "active",
+    "INACTIVE" = "inactive",
 }
 
 export type TMovie = {
