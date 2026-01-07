@@ -1,7 +1,5 @@
 import catchAsync from "../../../shared/catchAsync";
-
 import { MovieServices } from "./movie.service";
-
 import sendResponse from "../../../shared/sendResponse";
 
 const createMovie = catchAsync(async (req, res) => {

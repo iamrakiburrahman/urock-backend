@@ -5,6 +5,7 @@ import { USER_ROLES } from "../../../enums/user";
 import fileUploadHandler from "../../middleware/fileUploadHandler";
 import parseFileData from "../../middleware/parseFileData";
 import { FOLDER_NAMES } from "../../../enums/files";
+import parseJsonMiddleware from "../../middleware/dataParseHandler";
 
 const router = express.Router();
 

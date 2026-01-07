@@ -2,6 +2,7 @@ import { TMovie } from "./movie.interface";
 import { Movie } from "./movie.model";
 
 const createMovieToDB = async (payload: TMovie) => {
+    console.log(payload,"payload");
     const result = await Movie.create(payload);
     if (!result) {
         throw new Error("Failed to create movie");
