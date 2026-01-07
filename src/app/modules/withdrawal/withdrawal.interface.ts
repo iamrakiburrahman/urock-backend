@@ -20,6 +20,8 @@ export enum Currency {
      GBP = 'GBP',
      BDT = 'BDT',
 }
+
+
 export interface IWithdrawalRequest {
      requestId: string;
      userId: Types.ObjectId;

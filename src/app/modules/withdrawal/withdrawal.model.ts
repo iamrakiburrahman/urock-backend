@@ -1,6 +1,9 @@
 import { Schema, model } from 'mongoose';
 import { IWithdrawalRequest, WithdrawalStatus } from './withdrawal.interface';
 
+
+
+
 const withdrawalSchema = new Schema<IWithdrawalRequest>(
      {
           requestId: {
@@ -96,6 +99,7 @@ const withdrawalSchema = new Schema<IWithdrawalRequest>(
      },
      {
           timestamps: true,
+          versionKey: false,
      },
 );
 

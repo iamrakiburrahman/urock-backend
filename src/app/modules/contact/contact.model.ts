@@ -22,12 +22,14 @@ const contactSchema = new Schema<TContact>(
         message: {
             type: String,
             required: true,
-        },
+        }
     },
     {
         timestamps: true,
         versionKey: false,
     },
 );
+
+
 
 export const Contact = model("Contact", contactSchema);

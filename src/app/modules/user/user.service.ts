@@ -10,7 +10,6 @@ import AppError from '../../../errors/AppError';
 import generateOTP from '../../../utils/generateOTP';
 import { EmailQueueHelper } from '../../../helpers/bullMQ/bullHelper';
 import { CACHE_TTL, createCacheHelper } from '../../builder/RedisCacheHelper';
-import { Business } from '../business/business.model';
 import { jwtHelper } from '../../../helpers/jwtHelper';
 import config from '../../../config';
 
@@ -140,13 +139,52 @@ const checkFieldAvailability = async (query: Record<string, any>): Promise<{ isA
 };
 
 // Register user
-const registerUser = async (payload: Partial<IUser>): Promise<IUser> => {
-     const createUser = await User.create(payload);
-     if (!createUser) {
-          throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user');
-     }
-     await userCache.clearLists();
-     return createUser;
+const registerUser = async (payload: any) => {
+  const createUser = await User.create(payload);
+  if (!createUser) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user');
+  }
+
+  //send email
+  const otp = generateOTP();
+  const values = {
+    name: createUser.name,
+    otp: otp,
+    email: createUser.email!,
+  };
+
+  const createAccountTemplate = emailTemplate.createAccount(values);
+  emailHelper.sendEmail(createAccountTemplate);
+
+  //save to DB
+  const authentication = {
+    oneTimeCode: otp,
+    expireAt: new Date(Date.now() + 3 * 60000),
+  };
+
+  await User.findOneAndUpdate(
+    { _id: createUser._id },
+    { $set: { authentication } },
+  );
+
+  const createToken = jwtHelper.createToken(
+    {
+      id: createUser._id,
+      email: createUser.email,
+      role: createUser.role,
+    },
+    config.jwt.jwt_secret as Secret,
+    config.jwt.jwt_expire_in as string,
+  );
+
+  const result = {
+    token: createToken,
+    user: createUser,
+  };
+
+  // website a thakbe left side a nicher dike ja kon user signup korse
+
+  return result;
 };
 
 // Complete user registration

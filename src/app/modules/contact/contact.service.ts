@@ -9,19 +9,19 @@ import QueryBuilder from "../../builder/QueryBuilder";
 
 const createContactToDB = async (id: string, payload: TContact) => {
 
-    const user = await User.findById(id);
-    if (!user) {
-        throw new AppError(404, "User not found!");
-    }
+  const user = await User.findById(id);
+  if (!user) {
+    throw new AppError(404, "User not found!");
+  }
 
-    payload.userId = new Types.ObjectId(id);
+  payload.userId = new Types.ObjectId(id);
 
-    const contactEntry = await Contact.create(payload);
+  const contactEntry = await Contact.create(payload);
 
-    const emailPayload = {
-        to: payload.email,
-        subject: `New Contact Message: ${payload.name}`,
-        html: `
+  const emailPayload = {
+    to: payload.email,
+    subject: `New Contact Message: ${payload.name}`,
+    html: `
     <div style="max-width:600px;margin:20px auto;font-family:'Segoe UI',Arial,sans-serif;border:1px solid #f0f0f0;border-radius:10px;overflow:hidden;background-color:#ffffff;">
       
       <div style="background-color:#ff6a2c;padding:25px;text-align:center;color:#ffffff">
@@ -53,66 +53,70 @@ const createContactToDB = async (id: string, payload: TContact) => {
       </div>
     </div>
     `,
-    };
+  };
 
-    // send mail
-    await emailHelper.sendEmail(emailPayload);
+  // send mail
+  await emailHelper.sendEmail(emailPayload);
 
-    return contactEntry;
+  return contactEntry;
 };
 
 const getAllContactsFromDB = async (query: Record<string, unknown>) => {
-    const baseQuery = Contact.find().populate({
-        path: "userId",
-        select: "_id name email phone role image",
-    });
+  const baseQuery = Contact.find().populate({
+    path: "userId",
+    select: "_id name email phone role image",
+  });
 
-    const queryBuilder = new QueryBuilder(baseQuery, query)
-        .search(["name", "email", "phone", "message"])
-        .sort()
-        .fields()
-        .filter()
-        .paginate();
+  const queryBuilder = new QueryBuilder(baseQuery, query)
+    .search(["name", "email", "phone", "message"])
+    .sort()
+    .fields()
+    .filter()
+    .paginate();
 
-    const contacts = await queryBuilder.modelQuery;
-    const meta = await queryBuilder.countTotal();
+  const contacts = await queryBuilder.modelQuery;
+  const meta = await queryBuilder.countTotal();
 
-    if (!contacts || contacts.length === 0) {
-        throw new AppError(404, "Contact messages not found in the database");
-    }
+  if (!contacts || contacts.length === 0) {
+    throw new AppError(404, "Contact messages not found in the database");
+  }
 
-    return {
-        data: contacts,
-        meta,
-    };
+  return {
+    data: contacts,
+    meta,
+  };
 };
 
+const getAllContactsData = async () => {
+  const result = await Contact.find();
+}
+
 const getContactByIdFromDB = async (id: string) => {
-    const contact = await Contact.findById(id).populate({
-        path: "userId",
-        select: "name email phone message",
-    });
+  const contact = await Contact.findById(id).populate({
+    path: "userId",
+    select: "name email phone message",
+  });
 
-    if (!contact) {
-        throw new AppError(404, "No contact message found with this ID");
-    }
+  if (!contact) {
+    throw new AppError(404, "No contact message found with this ID");
+  }
 
-    return contact;
+  return contact;
 };
 
 const deleteContactByIdFromDB = async (id: string) => {
-    const contact = await Contact.findByIdAndDelete(id);
+  const contact = await Contact.findByIdAndDelete(id);
 
-    if (!contact) {
-        throw new AppError(400, "Failed to delete this contact message");
-    }
+  if (!contact) {
+    throw new AppError(400, "Failed to delete this contact message");
+  }
 
-    return contact;
+  return contact;
 };
 
 export const ContactServices = {
-    createContactToDB,
-    getAllContactsFromDB,
-    getContactByIdFromDB,
-    deleteContactByIdFromDB,
+  createContactToDB,
+  getAllContactsFromDB,
+  getContactByIdFromDB,
+  deleteContactByIdFromDB,
 };

@@ -10,59 +10,27 @@ import { jwtHelper } from '../../../helpers/jwtHelper';
 import { USER_ROLES } from '../../../enums/user';
 
 const login = catchAsync(async (req, res) => {
-     const loginData = req.body;
-     const { email, password } = loginData;
+  const { ...loginData } = req.body;
+  const result = await AuthService.loginUserFromDB(loginData);
 
-     // Check if user exists and get their role
-     const user = await User.findOne({ email }).select('+role');
-     if (!user) {
-          throw new AppError(StatusCodes.NOT_FOUND, 'User not found!');
-     }
-
-     let result;
-     // Role-based authentication
-     if (user.role === USER_ROLES.SUPER_ADMIN) {
-          // Super admin login with password
-          if (!password) {
-               throw new AppError(StatusCodes.BAD_REQUEST, 'Password is required for super admin!');
-          }
-          result = await AuthService.loginUserFromDB(loginData);
-     } else if (user.role === USER_ROLES.ADMIN) {
-          // Admin login with password
-          if (!password) {
-               throw new AppError(StatusCodes.BAD_REQUEST, 'Password is required for admin!');
-          }
-          result = await AuthService.loginUserFromDB(loginData);
-     } else {
-          if (!user.isVerified) {
-               throw new AppError(StatusCodes.BAD_REQUEST, 'User not verified!');
-          }
-          if (user.status === 'blocked') {
-               throw new AppError(StatusCodes.BAD_REQUEST, 'This user is blocked!');
-          }
-          if (user.isDeleted) {
-               throw new AppError(StatusCodes.BAD_REQUEST, 'User account is deleted!');
-          }
-          // Regular user login with OTP
-          result = await AuthService.sendOtpToEmail(loginData);
-     }
-
-     sendResponse(res, {
-          statusCode: StatusCodes.OK,
-          success: true,
-          message: user.role === USER_ROLES.SUPER_ADMIN ? 'Login successful' : 'OTP sent to your email successfully',
-          data: result,
-     });
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'User login successfully',
+    data: result,
+  });
 });
 
 const forgetPassword = catchAsync(async (req, res) => {
-     const result = await AuthService.forgetPasswordToDB(req.body.email);
-     sendResponse(res, {
-          statusCode: StatusCodes.OK,
-          success: true,
-          message: 'Reset password link sent to your email successfully',
-          data: result,
-     });
+  const email = req.body.email;
+  const result = await AuthService.forgetPasswordToDB(email);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Please check your email, we send a OTP!',
+    data: result,
+  });
 });
 
 const resetPassword = catchAsync(async (req, res) => {
@@ -144,6 +112,8 @@ const verifyOtp = catchAsync(async (req, res) => {
           data: result,
      });
 });
+
+
 
 // Email-only registration
 const emailOnlyRegistration = catchAsync(async (req, res) => {

@@ -19,6 +19,7 @@ export type IUser = {
      gender?: 'male' | 'female' | 'other';
      totalFollowers?: number;
      location?: string;
+     interest?: string[];
      stripeConnectAccount: {
           accountId: string;
           accountStatus: 'pending' | 'active' | 'rejected';

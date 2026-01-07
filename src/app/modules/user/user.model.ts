@@ -10,8 +10,7 @@ const userSchema = new Schema<IUser, UserModel>(
      {
           name: {
                type: String,
-               default: '',
-               required: false,
+               required: true,
           },
           userName: {
                type: String,
@@ -61,12 +60,12 @@ const userSchema = new Schema<IUser, UserModel>(
           },
           birthday: {
                type: Date,
-               default: null,
+               required: false
           },
           gender: {
                type: String,
                enum: ['male', 'female', 'other'],
-               default: 'other',
+               required: false,
           },
           // OAuth fields
           googleId: {
@@ -79,11 +78,15 @@ const userSchema = new Schema<IUser, UserModel>(
           },
           country: {
                type: String,
-               default: '',
+               required: false
           },
           location: {
                type: String,
-               default: '',
+               required: false
+          },
+          interest: {
+               type: [String],
+               required: false,
           },
           stripeConnectAccount: {
                accountId: {
@@ -161,7 +164,10 @@ const userSchema = new Schema<IUser, UserModel>(
                },
           },
      },
-     { timestamps: true },
+     {
+          timestamps: true,
+          versionKey: false,
+     },
 );
 
 // Exist User Check
@@ -249,6 +255,63 @@ userSchema.pre('aggregate', function (next) {
      this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
      next();
 });
+
+//exist user check
+userSchema.statics.isExistUserById = async (id: string) => {
+  const isExist = await User.findById(id);
+  return isExist;
+};
+
+userSchema.statics.isExistUserByEmail = async (email: string) => {
+  const isExist = await User.findOne({ email });
+  return isExist;
+};
+
+//account check
+userSchema.statics.isAccountCreated = async (id: string) => {
+  const isUserExist: any = await User.findById(id);
+  return isUserExist.accountInformation.status;
+};
+
+//is match password
+userSchema.statics.isMatchPassword = async (
+  password: string,
+  hashPassword: string,
+): Promise<boolean> => {
+  return await bcrypt.compare(password, hashPassword);
+};
+
+//check user
+// Consolidate into ONE hook to avoid logic conflicts and typing issues
+userSchema.pre('save', async function (next) {
+  // 1. Check Email Uniqueness (only if new or modified)
+  if (this.isNew || this.isModified('email')) {
+    const existingUser = await User.findOne({ email: this.email });
+    // Check if user exists and it's not the current document
+    if (existingUser && existingUser._id.toString() !== this._id.toString()) {
+      return next(new AppError(StatusCodes.BAD_REQUEST, 'Email already exists!'));
+    }
+  }
+
+  // 2. Hash Password
+  // Use a type cast (as string) to resolve the "Promise<string> & void" error
+  if (this.isModified('password') && this.password) {
+    const saltRounds = Number(config.bcrypt_salt_rounds);
+    const hashedPassword = await bcrypt.hash(this.password, saltRounds);
+    
+    // Explicitly casting to string solves the TS(2322) error
+    this.password = hashedPassword as string;
+  }
+
+  // 3. Auto-verify OAuth users
+  if (this.oauthProvider && !this.isVerified) {
+    this.isVerified = true;
+  }
+
+  next();
+});
+
+
 userSchema.index({ 'onlineStatus.isOnline': 1 });
 userSchema.index({ 'onlineStatus.lastHeartbeat': 1 });
 export const User = model<IUser, UserModel>('User', userSchema);
