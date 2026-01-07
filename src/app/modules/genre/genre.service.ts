@@ -34,11 +34,18 @@ const updateGenreByIdInDB = async (id: string, genre: TGenre) => {
     return result;
 };
 
-
+const deleteGenreByIdFromDB = async (id: string) => {
+    const result = await Genre.findByIdAndDelete(id);
+    if (!result) {
+        throw new Error('Genre not found');
+    }
+    return result;
+};
 
 export const GenreServices = {
     createGenreToDB,
     getAllGenresFromDB,
     getGenreByIdFromDB,
     updateGenreByIdInDB,
+    deleteGenreByIdFromDB,
 }
