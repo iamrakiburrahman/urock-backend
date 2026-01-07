@@ -33,8 +33,21 @@ const getSeriesById = catchAsync(async (req, res) => {
     })
 })
 
+const updateSeries = catchAsync(async (req, res) => {
+    const id = req.params.id;
+    const data = req.body;
+    const result = await SeriesServices.updateSeriesInDB(id, data);
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Series updated successfully',
+        data: result
+    })
+})
+
 export const SeriesControllers = {
     createSeries,
     getAllSeries,
     getSeriesById,
+    updateSeries,
 }
