@@ -45,9 +45,22 @@ const updateSeries = catchAsync(async (req, res) => {
     })
 })
 
+
+const deleteSeriesById = catchAsync(async (req, res) => {
+    const id = req.params.id;
+    const result = await SeriesServices.deleteSeriesFromDB(id);
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Series deleted successfully',
+        data: result
+    })
+})
+
 export const SeriesControllers = {
     createSeries,
     getAllSeries,
     getSeriesById,
     updateSeries,
+    deleteSeriesById,
 }
