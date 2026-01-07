@@ -26,8 +26,19 @@ const getGenreByIdFromDB = async (id: string) => {
     return result;
 };
 
+const updateGenreByIdInDB = async (id: string, genre: TGenre) => {
+    const result = await Genre.findByIdAndUpdate(id, genre, { new: true });
+    if (!result) {
+        throw new Error('Genre not found');
+    }
+    return result;
+};
+
+
+
 export const GenreServices = {
     createGenreToDB,
     getAllGenresFromDB,
     getGenreByIdFromDB,
+    updateGenreByIdInDB,
 }
