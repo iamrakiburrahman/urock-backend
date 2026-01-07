@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
-
 import { TEpisode, TSeason, TSeries } from "./series.interface";
-
 import { CONTENT_STATUS } from "./series.interface";
 
 const episodeSchema = new mongoose.Schema<TEpisode>({
