@@ -18,7 +18,16 @@ const getAllGenresFromDB = async () => {
     return result;
 };
 
+const getGenreByIdFromDB = async (id: string) => {
+    const result = await Genre.findById(id);
+    if (!result) {
+        throw new Error('Genre not found');
+    }
+    return result;
+};
+
 export const GenreServices = {
     createGenreToDB,
     getAllGenresFromDB,
+    getGenreByIdFromDB,
 }
