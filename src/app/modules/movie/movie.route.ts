@@ -2,13 +2,32 @@ import express from "express";
 import { MovieControllers } from "./movie.controller";
 import auth from "../../middleware/auth";
 import { USER_ROLES } from "../../../enums/user";
+import fileUploadHandler from "../../middleware/fileUploadHandler";
+import parseFileData from "../../middleware/parseFileData";
+import { FOLDER_NAMES } from "../../../enums/files";
 
 const router = express.Router();
 
-router.post('/',auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), MovieControllers.createMovie);
+router.post('/',
+    auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+    fileUploadHandler(),
+    parseFileData(
+        { fieldName: FOLDER_NAMES.THUMBNAIL, forceSingle: true },
+        { fieldName: FOLDER_NAMES.TRAILER, forceSingle: true },
+        { fieldName: FOLDER_NAMES.MOVIE, forceSingle: true },
+    ),
+    MovieControllers.createMovie);
 router.get('/', MovieControllers.getAllMovies);
 router.get('/:id', MovieControllers.getMovieById);
-router.patch('/:id',auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), MovieControllers.updateMovieById);
-router.delete('/:id',auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), MovieControllers.deleteMovieById);
+router.patch('/:id',
+    auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+    fileUploadHandler(),
+    parseFileData(
+        { fieldName: FOLDER_NAMES.THUMBNAIL, forceSingle: true },
+        { fieldName: FOLDER_NAMES.TRAILER, forceSingle: true },
+        { fieldName: FOLDER_NAMES.MOVIE, forceSingle: true },
+    ),
+    MovieControllers.updateMovieById);
+router.delete('/:id', auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), MovieControllers.deleteMovieById);
 
 export const MovieRoutes = router;

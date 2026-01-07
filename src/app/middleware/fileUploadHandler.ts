@@ -16,7 +16,7 @@ const FILE_TYPES: Record<string, FileTypeConfig> = {
      image: {
           mimeTypes: [
                'image/png',
-               'image/jpg', 
+               'image/jpg',
                'image/jpeg',
                'image/svg',
                'image/webp',
@@ -86,11 +86,13 @@ const FIELD_CONFIGS: FieldConfig[] = [
      { fieldName: 'permits', folderName: 'permits', fileType: 'image', maxCount: 1 },
      { fieldName: 'insurance', folderName: 'insurance', fileType: 'image', maxCount: 1 },
      { fieldName: 'driverLicense', folderName: 'driverLicense', fileType: 'image', maxCount: 1 },
-     
+
      // Media fields
      { fieldName: 'audio', folderName: 'audio', fileType: 'audio', maxCount: 5 },
      { fieldName: 'video', folderName: 'video', fileType: 'video', maxCount: 5 },
-     
+     { fieldName: 'trailer', folderName: 'trailer', fileType: 'video', maxCount: 5 },
+     { fieldName: 'movie', folderName: 'movie', fileType: 'video', maxCount: 5 },
+
      // Document fields  
      { fieldName: 'document', folderName: 'document', fileType: 'document', maxCount: 10 },
 ];
@@ -98,7 +100,7 @@ const FIELD_CONFIGS: FieldConfig[] = [
 const fileUploadHandler = (customFields?: FieldConfig[]) => {
      // Use custom fields if provided, otherwise use default
      const fieldsToUse = customFields || FIELD_CONFIGS;
-     
+
      // Create upload folder
      const baseUploadDir = getUploadDirectory();
      if (!fs.existsSync(baseUploadDir)) {
@@ -120,7 +122,7 @@ const fileUploadHandler = (customFields?: FieldConfig[]) => {
      const storage = multer.diskStorage({
           destination: (req, file, cb) => {
                const fieldConfig = fieldConfigMap.get(file.fieldname);
-               
+
                let uploadDir;
                if (fieldConfig) {
                     uploadDir = path.join(baseUploadDir, fieldConfig.folderName);
@@ -128,7 +130,7 @@ const fileUploadHandler = (customFields?: FieldConfig[]) => {
                     // Fallback for unknown fields
                     uploadDir = path.join(baseUploadDir, 'others');
                }
-               
+
                createDir(uploadDir);
                cb(null, uploadDir);
           },
@@ -147,7 +149,7 @@ const fileUploadHandler = (customFields?: FieldConfig[]) => {
      // Dynamic file filter
      const fileFilter = (req: Request, file: any, cb: FileFilterCallback) => {
           const fieldConfig = fieldConfigMap.get(file.fieldname);
-          
+
           if (!fieldConfig) {
                // Allow PDF for unknown fields as fallback
                if (file.mimetype === 'application/pdf') {
@@ -159,7 +161,7 @@ const fileUploadHandler = (customFields?: FieldConfig[]) => {
           }
 
           const fileTypeConfig = FILE_TYPES[fieldConfig.fileType];
-          
+
           if (fileTypeConfig.mimeTypes.includes(file.mimetype)) {
                cb(null, true);
           } else {
@@ -176,7 +178,7 @@ const fileUploadHandler = (customFields?: FieldConfig[]) => {
      const upload = multer({
           storage: storage,
           limits: {
-               fileSize: 100 * 1024 * 1024, // 100MB file size limit
+               fileSize: 500 * 1024 * 1024, // 500MB file size limit
           },
           fileFilter: fileFilter,
      }).fields(multerFields);

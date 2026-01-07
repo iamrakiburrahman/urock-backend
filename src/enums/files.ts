@@ -9,6 +9,8 @@ export enum FOLDER_NAMES {
      LOGO = 'logo',
      AUDIO = 'audio',
      VIDEO = 'video',
+     TRAILER = 'trailer',
+     MOVIE = 'movie',
      DOCUMENT = 'document',
      THUMBNAIL = 'thumbnail',
      OTHERS = 'others',
