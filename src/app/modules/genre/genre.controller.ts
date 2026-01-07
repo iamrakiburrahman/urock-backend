@@ -23,7 +23,19 @@ const getAllGenres = catchAsync(async (req, res) => {
     });
 })
 
+const getGenreById = catchAsync(async (req, res) => {
+    const id = req.params.id;
+    const result = await GenreServices.getGenreByIdFromDB(id);
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Genre retrieved successfully',
+        data: result,
+    });
+})
+
 export const GenreControllers = {
     createGenre,
     getAllGenres,
+    getGenreById,
 }
