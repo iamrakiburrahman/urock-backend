@@ -25,8 +25,19 @@ const getMovieByIdFromDB = async (id: string) => {
     return result;
 };
 
+const updateMovieByIdInDB = async (id: string, payload: Partial<TMovie>) => {
+    const result = await Movie.findByIdAndUpdate(id, payload, { new: true });
+    if (!result) {
+        throw new Error("Failed to update movie");
+    }
+    return result;
+};
+
+
+
 export const MovieServices = {
     createMovieToDB,
     getAllMoviesFromDB,
     getMovieByIdFromDB,
+    updateMovieByIdInDB,    
 }
