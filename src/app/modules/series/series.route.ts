@@ -5,6 +5,7 @@ import { USER_ROLES } from "../../../enums/user";
 import fileUploadHandler from "../../middleware/fileUploadHandler";
 import parseFileData from "../../middleware/parseFileData";
 import { FOLDER_NAMES } from "../../../enums/files";
+import optionalAuth from "../../middleware/optionalAuth";
 
 const router = express.Router();
 
@@ -15,10 +16,10 @@ router.post('/', auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
         { fieldName: FOLDER_NAMES.EPISODE_THUMBNAIL, forceMultiple: true },
         { fieldName: FOLDER_NAMES.SEASON_THUMBNAIL, forceMultiple: true },
         { fieldName: FOLDER_NAMES.TRAILER, forceSingle: true },
-        { fieldName: FOLDER_NAMES.VIDEO, forceMultiple: true },   
+        { fieldName: FOLDER_NAMES.VIDEO, forceMultiple: true },
     ),
     SeriesControllers.createSeries);
-router.get('/', SeriesControllers.getAllSeries);
+router.get('/', optionalAuth(), SeriesControllers.getAllSeries);
 router.get('/:id', SeriesControllers.getSeriesById);
 router.patch('/:id', fileUploadHandler(),
     parseFileData(
@@ -26,9 +27,10 @@ router.patch('/:id', fileUploadHandler(),
         { fieldName: FOLDER_NAMES.EPISODE_THUMBNAIL, forceMultiple: true },
         { fieldName: FOLDER_NAMES.SEASON_THUMBNAIL, forceMultiple: true },
         { fieldName: FOLDER_NAMES.TRAILER, forceSingle: true },
-        { fieldName: FOLDER_NAMES.VIDEO, forceMultiple: true },   
+        { fieldName: FOLDER_NAMES.VIDEO, forceMultiple: true },
     ),
     SeriesControllers.updateSeries);
+router.patch('/:id/status', auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), SeriesControllers.updateSeriesStatus);
 router.delete('/:id', SeriesControllers.deleteSeriesById);
 
 export const SeriesRoutes = router;

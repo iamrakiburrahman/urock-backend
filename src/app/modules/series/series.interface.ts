@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export enum CONTENT_STATUS {
+export enum SERIES_STATUS {
     "ACTIVE" = "active",
     "INACTIVE" = "inactive",
 }
@@ -39,6 +39,6 @@ export type TSeries = {
     writer: string;
     tags: string[];
     views: number;
-    status: CONTENT_STATUS;
+    status: SERIES_STATUS;
     seasons: TSeason[];
 }

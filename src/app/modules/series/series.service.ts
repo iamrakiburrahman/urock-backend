@@ -1,4 +1,6 @@
-import { TSeries } from "./series.interface";
+import { USER_ROLES } from "../../../enums/user";
+import { User } from "../user/user.model";
+import { SERIES_STATUS, TSeries } from "./series.interface";
 
 import { Series } from "./series.model";
 
@@ -10,12 +12,29 @@ const createSeriesToDB = async (seriesData: TSeries) => {
     return series;
 };
 
-const getAllSeriesFromDB = async () => {
-    const series = await Series.find();
-    if (!series || series.length === 0) {
-        throw new Error('Failed to get series');
+const getAllSeriesFromDB = async (userId?: string) => {
+    let query: any = {};
+    let userRole = null;
+
+   
+    if (userId) {
+        const user = await User.findById(userId);
+        userRole = user?.role;
     }
-    return series;
+
+ 
+    const isAdmin = userRole === USER_ROLES.SUPER_ADMIN || userRole === USER_ROLES.ADMIN;
+
+ 
+    if (!isAdmin) {
+        query.status = SERIES_STATUS.ACTIVE;
+    }
+
+    const result = await Series.find(query)
+        .populate('genreId')
+        .sort({ createdAt: -1 });
+
+    return result;
 };
 
 const getSeriesByIdFromDB = async (id: string) => {
@@ -81,6 +100,19 @@ const updateSeriesInDB = async (id: string, payload: any) => {
     return result;
 };
 
+const updateSeriesStatusInDB = async (id: string, status: SERIES_STATUS.ACTIVE | SERIES_STATUS.INACTIVE) => {
+
+    if (!(status === SERIES_STATUS.ACTIVE || status === SERIES_STATUS.INACTIVE)) {
+        throw new Error("Invalid series status");
+    }
+
+    const result = await Series.findByIdAndUpdate(id, { status }, { new: true });
+    if (!result) {
+        throw new Error("Failed to update series status");  
+    }
+    return result;
+};
+
 const deleteSeriesFromDB = async (id: string) => {
     const result = await Series.findByIdAndDelete(id);
     if (!result) {
@@ -94,5 +126,6 @@ export const SeriesServices = {
     getAllSeriesFromDB,
     getSeriesByIdFromDB,
     updateSeriesInDB,
+    updateSeriesStatusInDB,
     deleteSeriesFromDB,
 }

@@ -116,17 +116,20 @@ const verifyOtp = catchAsync(async (req, res) => {
 
 
 // Email-only registration
-const emailOnlyRegistration = catchAsync(async (req, res) => {
-     const { email , role} = req.body;
-     const result = await AuthService.emailOnlyRegistrationToDB(email, role);
+const createUser = catchAsync(
+  async (req, res, next) => {
+    const { ...userData } = req.body;
+    const result = await AuthService.createUserToDB(userData);
 
-     sendResponse(res, {
-          statusCode: StatusCodes.CREATED,
-          success: true,
-          message: result.message,
-          data: result,
-     });
-});
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message:
+        'Your account has been successfully created. Verify Your Email By OTP. Check your email',
+      data: result,
+    });
+  },
+);
 
 // resend Otp
 const resendOtp = catchAsync(async (req, res) => {
@@ -154,7 +157,7 @@ export const AuthController = {
      login,
      verifyOtp,
      resendOtp,
-     emailOnlyRegistration,
+     createUser,
      forgetPassword,
      resetPassword,
      changePassword,

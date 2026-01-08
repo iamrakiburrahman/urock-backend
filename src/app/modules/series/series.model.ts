@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { TEpisode, TSeason, TSeries } from "./series.interface";
-import { CONTENT_STATUS } from "./series.interface";
+import { SERIES_STATUS } from "./series.interface";
 
 const episodeSchema = new mongoose.Schema<TEpisode>({
     episodeNumber: { type: Number, required: true },
@@ -33,7 +33,7 @@ const seriesSchema = new mongoose.Schema<TSeries>({
     writer: { type: String, required: true },
     tags: { type: [String], required: true },
     views: { type: Number, default: 0 },
-    status: { type: String, enum: Object.values(CONTENT_STATUS), default: CONTENT_STATUS.ACTIVE },
+    status: { type: String, enum: Object.values(SERIES_STATUS), default: SERIES_STATUS.ACTIVE },
     seasons: { type: [seasonSchema], required: true },
 },
     {

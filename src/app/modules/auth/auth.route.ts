@@ -7,7 +7,7 @@ import auth from '../../middleware/auth';
 const router = express.Router();
 
 // Email-only registration
-router.post('/register', validateRequest(AuthValidation.createEmailOnlyRegistrationZodSchema), AuthController.emailOnlyRegistration);
+router.post('/register', validateRequest(AuthValidation.createEmailOnlyRegistrationZodSchema), AuthController.createUser);
 router.post('/login', validateRequest(AuthValidation.createLoginZodSchema), AuthController.login);
 router.post('/verify-otp', validateRequest(AuthValidation.createVerifyEmailZodSchema), AuthController.verifyOtp);
 router.post('/resend-otp', AuthController.resendOtp);

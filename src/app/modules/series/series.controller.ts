@@ -1,5 +1,6 @@
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
+import { SERIES_STATUS } from "./series.interface";
 import { SeriesServices } from "./series.service";
 
 
@@ -42,16 +43,16 @@ const createSeries = catchAsync(async (req, res) => {
   });
 });
 
-
 const getAllSeries = catchAsync(async (req, res) => {
-    const result = await SeriesServices.getAllSeriesFromDB();
+    const { id: userId } = req.user as any;
+    const result = await SeriesServices.getAllSeriesFromDB(userId);
     sendResponse(res, {
-        success: true,
         statusCode: 200,
-        message: 'Series retrieved successfully',
-        data: result
-    })
-})
+        success: true,
+        message: 'Series retrieved are successfully',
+        data: result,
+    });
+});
 
 const getSeriesById = catchAsync(async (req, res) => {
     const result = await SeriesServices.getSeriesByIdFromDB(req.params.id);
@@ -141,7 +142,17 @@ const updateSeries = catchAsync(async (req, res) => {
   });
 });
 
-
+const updateSeriesStatus = catchAsync(async (req, res) => {
+    const id = req.params.id;
+    const status = req.body.status as SERIES_STATUS;
+    const result = await SeriesServices.updateSeriesStatusInDB(id, status);
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Series status updated successfully',
+        data: result
+    })
+})
 
 const deleteSeriesById = catchAsync(async (req, res) => {
     const id = req.params.id;
@@ -159,5 +170,6 @@ export const SeriesControllers = {
     getAllSeries,
     getSeriesById,
     updateSeries,
+    updateSeriesStatus,
     deleteSeriesById,
 }

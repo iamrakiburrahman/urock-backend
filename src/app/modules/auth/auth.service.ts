@@ -109,56 +109,52 @@ const oauthLoginToDB = async (profile: any, provider: 'google') => {
 };
 
 // Email-only registration
-const emailOnlyRegistrationToDB = async (email: string, role: USER_ROLES) => {
-     if (role === USER_ROLES.SUPER_ADMIN) {
-          role = USER_ROLES.USER;
-     }
+const createUserToDB = async (payload: any) => {
+  const createUser = await User.create(payload);
+  if (!createUser) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user');
+  }
 
-     const existingUser = await User.findOne({ email });
-     let newUser;
-     if (existingUser) {
-          if (!existingUser.isVerified) {
-               newUser = existingUser;
-          } else {
-               throw new AppError(StatusCodes.BAD_REQUEST, 'This email already exists and is verified!');
-          }
-     } else {
-          const userData = {
-               email,
-               role: USER_ROLES.USER,
-               isVerified: false,
-          };
-          try {
-               newUser = await User.create(userData);
-          } catch (error: any) {
-               if (error.code === 11000) {
-                    throw new AppError(StatusCodes.BAD_REQUEST, 'User already exists with this email!');
-               }
-               throw error;
-          }
-     }
-     const otp = generateOTP(Number(config.otp.length));
-     const otpExpireTime = new Date(Date.now() + Number(config.otp.expire_time));
-     const authentication = {
-          oneTimeCode: otp,
-          expireAt: otpExpireTime,
-     };
-     newUser.authentication = { isResetPassword: false, ...authentication };
-     await newUser.save();
-     const values = {
-          name: `${newUser.email.split('@')[0]}`,
-          otp: otp,
-          email,
-     };
-     // Send email in background without waiting
-     await EmailQueueHelper.sendWelcomeEmail(values.email, values.name, values.otp);
+  //send email
+  const otp = generateOTP();
+  const values = {
+    name: createUser.name,
+    otp: otp,
+    email: createUser.email!,
+  };
 
-     const message = existingUser && !existingUser.isVerified ? 'OTP resent! Please check your email for verification.' : 'Registration successful! Please check your email for OTP verification.';
+  const createAccountTemplate = emailTemplate.createAccount(values);
+  emailHelper.sendEmail(createAccountTemplate);
 
-     return {
-          message,
-          email,
-     };
+  //save to DB
+  const authentication = {
+    oneTimeCode: otp,
+    expireAt: new Date(Date.now() + 3 * 60000),
+  };
+
+  await User.findOneAndUpdate(
+    { _id: createUser._id },
+    { $set: { authentication } },
+  );
+
+  const createToken = jwtHelper.createToken(
+    {
+      id: createUser._id,
+      email: createUser.email,
+      role: createUser.role,
+    },
+    config.jwt.jwt_secret as Secret,
+    config.jwt.jwt_expire_in as string,
+  );
+
+  const result = {
+    token: createToken,
+    // user: createUser,
+  };
+
+  // website a thakbe left side a nicher dike ja kon user signup korse
+
+  return result;
 };
 
 //forget password
@@ -239,7 +235,7 @@ const verifyEmailToDB = async (payload: IVerifyEmail) => {
   if (!isExistUser.isVerified) {
     await User.findOneAndUpdate(
       { _id: isExistUser._id },
-      { verified: true, authentication: { oneTimeCode: null, expireAt: null } },
+      { isVerified: true, authentication: { oneTimeCode: null, expireAt: null } },
     );
     message = 'Email verify successfully';
   } else {
@@ -403,7 +399,7 @@ export const AuthService = {
      loginUserFromDB,
      oauthLoginToDB,
      sendOtpToEmail,
-     emailOnlyRegistrationToDB,
+     createUserToDB,
      forgetPasswordToDB,
      resendOtpFromDb,
      resetPasswordToDB,
