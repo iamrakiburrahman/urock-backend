@@ -34,6 +34,16 @@ const getPopularMovies = catchAsync(async (req, res) => {
     });
 });
 
+const getTrendingMovies = catchAsync(async (req, res) => {
+    const result = await MovieServices.getTrendingMoviesFromDB();
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Trending movies retrieved are successfully',
+        data: result,
+    });
+});
+
 
 
 const getRelatedMovies = catchAsync(async (req, res) => {
@@ -101,6 +111,7 @@ export const MovieControllers = {
     createMovie,
     getAllMovies,
     getPopularMovies,
+    getTrendingMovies,
     getRelatedMovies,
     getMovieById,
     updateMovieById,

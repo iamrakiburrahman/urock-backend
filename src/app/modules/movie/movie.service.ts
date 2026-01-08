@@ -69,6 +69,29 @@ const getPopularMoviesFromDB = async () => {
     return result;
 };
 
+const getTrendingMoviesFromDB = async () => {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const result = await Movie.find({
+        status: MOVIE_STATUS.ACTIVE,
+        createdAt: { $gte: thirtyDaysAgo } 
+    })
+    .populate('genreId')
+    .sort({ views: -1, createdAt: -1 })
+    .limit(10);
+
+
+    if (result.length < 5) {
+        return await Movie.find({ status: MOVIE_STATUS.ACTIVE })
+            .populate('genreId')
+            .sort({ views: -1 })
+            .limit(10);
+    }
+
+    return result;
+};
+
 const getMovieByIdFromDB = async (id: string) => {
 
     const result = await Movie.findByIdAndUpdate(
@@ -117,6 +140,7 @@ export const MovieServices = {
     createMovieToDB,
     getAllMoviesFromDB,
     getPopularMoviesFromDB,
+    getTrendingMoviesFromDB,
     getRelatedMoviesFromDB,
     getMovieByIdFromDB,
     updateMovieByIdInDB,
