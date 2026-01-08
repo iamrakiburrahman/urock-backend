@@ -39,7 +39,6 @@ const getAllMoviesFromDB = async (userId?: string) => {
 const getRecommendedMoviesFromDB = async (userId: string) => {
     const user = await User.findById(userId);
 
-
     // if not interest then return popular movies
     if (!user || !user.interest || user.interest.length === 0) {
         return await Movie.find({ status: MOVIE_STATUS.ACTIVE })
