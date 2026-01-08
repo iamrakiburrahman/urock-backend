@@ -22,6 +22,8 @@ router.post('/',
 
 router.get('/', optionalAuth(), MovieControllers.getAllMovies);
 
+router.get('/related/:id', MovieControllers.getRelatedMovies);
+
 router.get('/:id', MovieControllers.getMovieById);
 
 router.patch('/:id/status',

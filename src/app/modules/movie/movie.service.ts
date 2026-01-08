@@ -37,6 +37,28 @@ const getAllMoviesFromDB = async (userId?: string) => {
     return result;
 };
 
+const getRelatedMoviesFromDB = async (movieId: string) => {
+   
+    const currentMovie = await Movie.findById(movieId);
+   
+    
+    if (!currentMovie) {
+        throw new Error("Current movie not found");
+    }
+
+    const result = await Movie.find({
+        genreId: currentMovie.genreId,       
+        _id: { $ne: movieId },               
+        status: MOVIE_STATUS.ACTIVE        
+    })
+    .populate('genreId')
+    .limit(10)                             
+    .sort({ createdAt: -1 });
+    
+    
+    return result;
+};
+
 const getMovieByIdFromDB = async (id: string) => {
     const result = await Movie.findById(id);
     if (!result) {
@@ -77,6 +99,7 @@ const deleteMovieByIdFromDB = async (id: string) => {
 export const MovieServices = {
     createMovieToDB,
     getAllMoviesFromDB,
+    getRelatedMoviesFromDB,
     getMovieByIdFromDB,
     updateMovieByIdInDB,
     updateMovieStatusInDB,

@@ -24,6 +24,20 @@ const getAllMovies = catchAsync(async (req, res) => {
     });
 });
 
+const getRelatedMovies = catchAsync(async (req, res) => {
+    const movieId = req.params.id;
+   
+    const result = await MovieServices.getRelatedMoviesFromDB(movieId);
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Related movies retrieved are successfully',
+        data: result,
+    });
+});
+
+
+
 const getMovieById = catchAsync(async (req, res) => {
     const id = req.params.id;
     const result = await MovieServices.getMovieByIdFromDB(id);
@@ -74,6 +88,7 @@ const deleteMovieById = catchAsync(async (req, res) => {
 export const MovieControllers = {
     createMovie,
     getAllMovies,
+    getRelatedMovies,
     getMovieById,
     updateMovieById,
     updateMovieStatus,
