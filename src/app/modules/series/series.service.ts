@@ -26,17 +26,17 @@ const getSeriesByIdFromDB = async (id: string) => {
     return series;
 };
 
-const updateSeriesInDB = async (
-    id: string,
-    payload: any
-) => {
+const updateSeriesInDB = async (id: string, payload: any) => {
     const { action, seasonIndex, episodeIndex, data, ...remainingData } = payload;
 
+    const modifiedUpdatedData: Record<string, any> = {};
 
-    const modifiedUpdatedData: Record<string, unknown> = {
-        ...remainingData,
-    };
 
+    Object.keys(remainingData).forEach((key) => {
+        if (key !== 'seasons') {
+            modifiedUpdatedData[key] = remainingData[key];
+        }
+    });
 
     if (remainingData.seasons && Array.isArray(remainingData.seasons)) {
         remainingData.seasons.forEach((season: any, sIdx: number) => {
@@ -44,9 +44,7 @@ const updateSeriesInDB = async (
                 modifiedUpdatedData[`seasons.${sIdx}.${key}`] = season[key];
             });
         });
-        delete modifiedUpdatedData.seasons;
     }
-
 
     let updateQuery: any = { $set: modifiedUpdatedData };
 
@@ -56,7 +54,6 @@ const updateSeriesInDB = async (
     else if (action === 'add-episode' && seasonIndex !== undefined) {
         updateQuery.$push = { [`seasons.${seasonIndex}.episodes`]: data };
     }
-
 
     if (action === 'remove-season' || action === 'remove-episode') {
         const doc = await Series.findById(id);
@@ -68,11 +65,9 @@ const updateSeriesInDB = async (
             doc.seasons[seasonIndex].episodes.splice(episodeIndex, 1);
         }
 
-
-        Object.assign(doc, remainingData);
+        Object.assign(doc, modifiedUpdatedData);
         return await doc.save();
     }
-
 
     const result = await Series.findByIdAndUpdate(
         id,
@@ -99,5 +94,5 @@ export const SeriesServices = {
     getAllSeriesFromDB,
     getSeriesByIdFromDB,
     updateSeriesInDB,
-    deleteSeriesFromDB, 
+    deleteSeriesFromDB,
 }

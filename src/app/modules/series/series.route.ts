@@ -12,8 +12,10 @@ router.post('/', auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
     fileUploadHandler(),
     parseFileData(
         { fieldName: FOLDER_NAMES.SERIES_THUMBNAIL, forceSingle: true },
-        { fieldName: FOLDER_NAMES.EPISODE_THUMBNAIL, forceSingle: true },
-        { fieldName: FOLDER_NAMES.SEASON_THUMBNAIL, forceSingle: true },
+        { fieldName: FOLDER_NAMES.EPISODE_THUMBNAIL, forceMultiple: true },
+        { fieldName: FOLDER_NAMES.SEASON_THUMBNAIL, forceMultiple: true },
+        { fieldName: FOLDER_NAMES.TRAILER, forceSingle: true },
+        { fieldName: FOLDER_NAMES.VIDEO, forceMultiple: true },   
     ),
     SeriesControllers.createSeries);
 router.get('/', SeriesControllers.getAllSeries);
@@ -21,8 +23,10 @@ router.get('/:id', SeriesControllers.getSeriesById);
 router.patch('/:id', fileUploadHandler(),
     parseFileData(
         { fieldName: FOLDER_NAMES.SERIES_THUMBNAIL, forceSingle: true },
-        { fieldName: FOLDER_NAMES.EPISODE_THUMBNAIL, forceSingle: true },
-        { fieldName: FOLDER_NAMES.SEASON_THUMBNAIL, forceSingle: true },
+        { fieldName: FOLDER_NAMES.EPISODE_THUMBNAIL, forceMultiple: true },
+        { fieldName: FOLDER_NAMES.SEASON_THUMBNAIL, forceMultiple: true },
+        { fieldName: FOLDER_NAMES.TRAILER, forceSingle: true },
+        { fieldName: FOLDER_NAMES.VIDEO, forceMultiple: true },   
     ),
     SeriesControllers.updateSeries);
 router.delete('/:id', SeriesControllers.deleteSeriesById);
