@@ -44,6 +44,18 @@ const getTrendingMovies = catchAsync(async (req, res) => {
     });
 });
 
+const getRecommendedMovies = catchAsync(async (req, res) => {
+    const { id: userId } = req.user as any;
+    
+    const result = await MovieServices.getRecommendedMoviesFromDB(userId);
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Recommended movies retrieved are successfully',
+        data: result,
+    });
+});
+
 
 
 const getRelatedMovies = catchAsync(async (req, res) => {
@@ -112,6 +124,7 @@ export const MovieControllers = {
     getAllMovies,
     getPopularMovies,
     getTrendingMovies,
+    getRecommendedMovies,
     getRelatedMovies,
     getMovieById,
     updateMovieById,

@@ -26,6 +26,8 @@ router.get('/popular', optionalAuth(), MovieControllers.getPopularMovies);
 
 router.get('/trending', optionalAuth(), MovieControllers.getTrendingMovies);
 
+router.get('/recommended', auth(USER_ROLES.USER), MovieControllers.getRecommendedMovies);
+
 
 
 router.get('/related/:id', MovieControllers.getRelatedMovies);

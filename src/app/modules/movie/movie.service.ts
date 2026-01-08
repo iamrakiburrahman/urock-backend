@@ -1,4 +1,5 @@
 import { USER_ROLES } from "../../../enums/user";
+import { Genre } from "../genre/genre.model";
 import { User } from "../user/user.model";
 import { MOVIE_STATUS, TMovie } from "./movie.interface";
 import { Movie } from "./movie.model";
@@ -21,11 +22,9 @@ const getAllMoviesFromDB = async (userId?: string) => {
         const user = await User.findById(userId);
         userRole = user?.role;
     }
-
  
     const isAdmin = userRole === USER_ROLES.SUPER_ADMIN || userRole === USER_ROLES.ADMIN;
 
- 
     if (!isAdmin) {
         query.status = MOVIE_STATUS.ACTIVE;
     }
@@ -33,6 +32,56 @@ const getAllMoviesFromDB = async (userId?: string) => {
     const result = await Movie.find(query)
         .populate('genreId')
         .sort({ createdAt: -1 });
+
+    return result;
+};
+
+const getRecommendedMoviesFromDB = async (userId: string) => {
+    const user = await User.findById(userId);
+
+
+    // if not interest then return popular movies
+    if (!user || !user.interest || user.interest.length === 0) {
+        return await Movie.find({ status: MOVIE_STATUS.ACTIVE })
+            .sort({ views: -1, createdAt: -1 }) 
+            .limit(10)
+            .populate('genreId');
+    }
+
+    console.log(user.interest, "user.interest");
+
+    // match genre name with user interest
+    const matchingGenres = await Genre.find({
+        name: { 
+            $in: user.interest.map(interest => new RegExp(`^${interest}$`, 'i')) 
+        } 
+    }).select('_id');
+
+    console.log(matchingGenres, "matchingGenres");
+
+    const genreIds = matchingGenres.map(g => g._id);
+
+    // find movies with matching genre or tags
+    const result = await Movie.find({
+        status: MOVIE_STATUS.ACTIVE,
+        $or: [
+            { genreId: { $in: genreIds } },    
+            { tags: { $in: user.interest } }    
+        ]
+    })
+    .populate('genreId')
+    .sort({ views: -1 }) 
+    .limit(10);
+
+    // if less than 5 movies found then add some general movies
+    if (result.length < 5) {
+        const extraMovies = await Movie.find({
+            status: MOVIE_STATUS.ACTIVE,
+            _id: { $nin: result.map(m => m._id) } 
+        }).populate('genreId').limit(10 - result.length);
+        
+        return [...result, ...extraMovies];
+    }
 
     return result;
 };
@@ -80,7 +129,6 @@ const getTrendingMoviesFromDB = async () => {
     .populate('genreId')
     .sort({ views: -1, createdAt: -1 })
     .limit(10);
-
 
     if (result.length < 5) {
         return await Movie.find({ status: MOVIE_STATUS.ACTIVE })
@@ -141,6 +189,7 @@ export const MovieServices = {
     getAllMoviesFromDB,
     getPopularMoviesFromDB,
     getTrendingMoviesFromDB,
+    getRecommendedMoviesFromDB,
     getRelatedMoviesFromDB,
     getMovieByIdFromDB,
     updateMovieByIdInDB,
