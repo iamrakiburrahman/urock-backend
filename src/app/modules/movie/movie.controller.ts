@@ -24,6 +24,18 @@ const getAllMovies = catchAsync(async (req, res) => {
     });
 });
 
+const getPopularMovies = catchAsync(async (req, res) => {
+    const result = await MovieServices.getPopularMoviesFromDB();
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Popular movies retrieved are successfully',
+        data: result,
+    });
+});
+
+
+
 const getRelatedMovies = catchAsync(async (req, res) => {
     const movieId = req.params.id;
    
@@ -88,6 +100,7 @@ const deleteMovieById = catchAsync(async (req, res) => {
 export const MovieControllers = {
     createMovie,
     getAllMovies,
+    getPopularMovies,
     getRelatedMovies,
     getMovieById,
     updateMovieById,

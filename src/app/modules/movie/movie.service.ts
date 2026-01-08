@@ -59,11 +59,28 @@ const getRelatedMoviesFromDB = async (movieId: string) => {
     return result;
 };
 
+const getPopularMoviesFromDB = async () => {
+    
+    const result = await Movie.find({ status: MOVIE_STATUS.ACTIVE })
+        .populate('genreId')
+        .sort({ views: -1 }) 
+        .limit(10);
+
+    return result;
+};
+
 const getMovieByIdFromDB = async (id: string) => {
-    const result = await Movie.findById(id);
+
+    const result = await Movie.findByIdAndUpdate(
+        id, 
+        { $inc: { views: 1 } }, 
+        { new: true }         
+    ).populate('genreId');
+
     if (!result) {
         throw new Error("Failed to get movie");
     }
+
     return result;
 };
 
@@ -99,6 +116,7 @@ const deleteMovieByIdFromDB = async (id: string) => {
 export const MovieServices = {
     createMovieToDB,
     getAllMoviesFromDB,
+    getPopularMoviesFromDB,
     getRelatedMoviesFromDB,
     getMovieByIdFromDB,
     updateMovieByIdInDB,
