@@ -4,10 +4,6 @@ import sendResponse from '../../../shared/sendResponse';
 import { UserService } from './user.service';
 import config from '../../../config';
 import bcrypt from 'bcrypt';
-import { USER_ROLES } from '../../../enums/user';
-import auth from '../../middleware/auth';
-import axios from 'axios';
-import { User } from './user.model';
 
 const createUser = catchAsync(async (req, res) => {
      const { ...userData } = req.body;

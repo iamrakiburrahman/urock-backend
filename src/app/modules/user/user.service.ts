@@ -13,7 +13,6 @@ import { CACHE_TTL, createCacheHelper } from '../../builder/RedisCacheHelper';
 import { jwtHelper } from '../../../helpers/jwtHelper';
 import config from '../../../config';
 
-
 const userCache = createCacheHelper('user');
 
 // create user
@@ -97,7 +96,9 @@ const updateProfileToDB = async (user: JwtPayload, payload: Partial<IUser>) => {
      if (!isExistUser) {
           throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist");
      }
-
+     if (!payload.image) {
+          delete payload.image;
+     }
      if (payload.image && isExistUser.image) {
           unlinkFile(isExistUser.image);
      }
@@ -140,51 +141,48 @@ const checkFieldAvailability = async (query: Record<string, any>): Promise<{ isA
 
 // Register user
 const registerUser = async (payload: any) => {
-  const createUser = await User.create(payload);
-  if (!createUser) {
-    throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user');
-  }
+     const createUser = await User.create(payload);
+     if (!createUser) {
+          throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user');
+     }
 
-  //send email
-  const otp = generateOTP();
-  const values = {
-    name: createUser.name,
-    otp: otp,
-    email: createUser.email!,
-  };
+     //send email
+     const otp = generateOTP();
+     const values = {
+          name: createUser.name,
+          otp: otp,
+          email: createUser.email!,
+     };
 
-  const createAccountTemplate = emailTemplate.createAccount(values);
-  emailHelper.sendEmail(createAccountTemplate);
+     const createAccountTemplate = emailTemplate.createAccount(values);
+     emailHelper.sendEmail(createAccountTemplate);
 
-  //save to DB
-  const authentication = {
-    oneTimeCode: otp,
-    expireAt: new Date(Date.now() + 3 * 60000),
-  };
+     //save to DB
+     const authentication = {
+          oneTimeCode: otp,
+          expireAt: new Date(Date.now() + 3 * 60000),
+     };
 
-  await User.findOneAndUpdate(
-    { _id: createUser._id },
-    { $set: { authentication } },
-  );
+     await User.findOneAndUpdate({ _id: createUser._id }, { $set: { authentication } });
 
-  const createToken = jwtHelper.createToken(
-    {
-      id: createUser._id,
-      email: createUser.email,
-      role: createUser.role,
-    },
-    config.jwt.jwt_secret as Secret,
-    config.jwt.jwt_expire_in as string,
-  );
+     const createToken = jwtHelper.createToken(
+          {
+               id: createUser._id,
+               email: createUser.email,
+               role: createUser.role,
+          },
+          config.jwt.jwt_secret as Secret,
+          config.jwt.jwt_expire_in as string,
+     );
 
-  const result = {
-    token: createToken,
-    user: createUser,
-  };
+     const result = {
+          token: createToken,
+          user: createUser,
+     };
 
-  // website a thakbe left side a nicher dike ja kon user signup korse
+     // website a thakbe left side a nicher dike ja kon user signup korse
 
-  return result;
+     return result;
 };
 
 // Complete user registration
