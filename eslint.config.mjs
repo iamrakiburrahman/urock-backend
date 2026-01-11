@@ -3,6 +3,9 @@ import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import pluginPrettier from 'eslint-plugin-prettier';
 import configPrettier from 'eslint-config-prettier';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
 
 export default [
      { files: ['**/*.{js,mjs,cjs,ts}'] },

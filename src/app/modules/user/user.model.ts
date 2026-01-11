@@ -1,9 +1,7 @@
 import bcrypt from 'bcrypt';
-import { StatusCodes } from 'http-status-codes';
 import { model, Query, Schema } from 'mongoose';
 import config from '../../../config';
 import { USER_ROLES } from '../../../enums/user';
-import AppError from '../../../errors/AppError';
 import { IUser, UserModel } from './user.interface';
 
 const userSchema = new Schema<IUser, UserModel>(
